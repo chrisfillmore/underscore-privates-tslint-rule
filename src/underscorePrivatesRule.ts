@@ -10,7 +10,7 @@ type RelevantClassMember =
     | ts.SetAccessorDeclaration;
 
 export class Rule extends Lint.Rules.AbstractRule {
-    public static FAILURE_STRING = "private member's name must be prefixed with an underscore";
+    public static FAILURE_STRING = "private member's name must be postfixed with an underscore";
 
     public apply(sourceFile: ts.SourceFile): Lint.RuleFailure[] {
         return this.applyWithFunction(sourceFile, walk);
@@ -37,7 +37,7 @@ function checkNodeForViolations(ctx: Lint.WalkContext<void>, node: ts.Node): voi
         return;
     }
 
-    if (!nameStartsWithUnderscore(name.text) && memberIsPrivate(node)) {
+    if (!nameEndsWithUnderscore(name.text) && memberIsPrivate(node)) {
         ctx.addFailureAtNode(name, Rule.FAILURE_STRING);
     }
 }
@@ -54,8 +54,8 @@ function isRelevantClassMember(node: ts.Node): node is RelevantClassMember {
     }
 }
 
-function nameStartsWithUnderscore(text: string) {
-    return text.charCodeAt(0) === UNDERSCORE;
+function nameEndsWithUnderscore(text: string) {
+    return text.charCodeAt(text.length - 1) === UNDERSCORE;
 }
 
 function memberIsPrivate(node: ts.Declaration) {
